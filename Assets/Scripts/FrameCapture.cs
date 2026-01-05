@@ -8,6 +8,11 @@ public class FrameCapture : MonoBehaviour
     public string outputDir;
     public int fps = 60;
 
+    void OnValidate()
+    {
+        outputDir = string.IsNullOrEmpty(outputDir) ? Path.Combine(Application.dataPath, "Exports") : outputDir;
+    }
+
     public IEnumerator Capture(float duration)
     {
         int total = Mathf.CeilToInt(duration * fps);

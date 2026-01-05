@@ -3,7 +3,6 @@ using UnityEngine;
 
 public static class PathUtil
 {
-    /// Root folder của app (bên cạnh exe)
     public static string AppRoot
     {
         get
@@ -21,13 +20,7 @@ public static class PathUtil
     {
         get
         {
-#if UNITY_STANDALONE_WIN
-            return Path.Combine(AppRoot, "ffmpeg/ffmpeg.exe");
-#elif UNITY_STANDALONE_OSX
-            return Path.Combine(AppRoot, "ffmpeg/ffmpeg");
-#else
-            return "";
-#endif
+            return Path.Combine(Application.dataPath, "StreamingAssets", "ffmpeg-8.0.1-essentials_build/bin/ffmpeg.exe");
         }
     }
 

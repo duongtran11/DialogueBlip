@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 
 public static class FFmpegEncoder
 {
@@ -9,25 +10,78 @@ public static class FFmpegEncoder
         string outputPath
     )
     {
-        string videoTemp = $"{frameDir}/video.mp4";
+        string framePattern = Path.Combine(
+            PathUtil.ExportDir,
+            "frame_%05d.png"
+        ).Replace("\\", "/");
 
-        Run($"{ffmpegPath}",
-            $"-y -framerate 60 -i {frameDir}/frame_%05d.png " +
-            "-c:v libx264 -pix_fmt yuv420p video.mp4");
+        string outputVideo = Path.Combine(
+            PathUtil.ExportDir,
+            "video.mp4"
+        ).Replace("\\", "/");
 
-        Run($"{ffmpegPath}",
-            $"-y -i video.mp4 -i {audioPath} " +
-            "-c:v copy -c:a aac {outputPath}");
+        string args =
+            $"-y -framerate 60 -i \"{framePattern}\" " +
+            "-c:v libx264 -pix_fmt yuv420p " +
+            $"\"{outputVideo}\"";
+
+        Process encode = RunFFmpeg(
+            PathUtil.FFmpegPath,
+            args,
+            PathUtil.ExportDir
+        );
+        encode.WaitForExit();
+
+        string finalVideo = Path.Combine(
+            PathUtil.ExportDir,
+            "final.mp4"
+        ).Replace("\\", "/");
+
+        audioPath = PathUtil.AudioPath.Replace("\\", "/");
+
+        string mergeArgs =
+            $"-y -i \"{outputVideo}\" -i \"{audioPath}\" " +
+            "-c:v copy -c:a aac " +
+            $"\"{finalVideo}\"";
+
+        RunFFmpeg(
+            PathUtil.FFmpegPath,
+            mergeArgs,
+            PathUtil.ExportDir
+        );
     }
 
-    static void Run(string exe, string args)
+    static Process RunFFmpeg(string exe, string args, string workingDir)
     {
-        Process.Start(new ProcessStartInfo
+        var psi = new ProcessStartInfo
         {
             FileName = exe,
             Arguments = args,
+            WorkingDirectory = workingDir,
+            UseShellExecute = false,
             CreateNoWindow = true,
-            UseShellExecute = false
-        });
+            RedirectStandardError = true,
+            RedirectStandardOutput = true
+        };
+
+        var process = Process.Start(psi);
+
+        process.OutputDataReceived += (s, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+                UnityEngine.Debug.Log(e.Data);
+        };
+
+        process.ErrorDataReceived += (s, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+                UnityEngine.Debug.LogError(e.Data);
+        };
+
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+
+        return process;
     }
+
 }
