@@ -3,12 +3,7 @@ using System.IO;
 
 public static class FFmpegEncoder
 {
-    public static void EncodeVideo(
-        string ffmpegPath,
-        string frameDir,
-        string audioPath,
-        string outputPath
-    )
+    public static void EncodeVideo(float fps)
     {
         string framePattern = Path.Combine(
             PathUtil.ExportDir,
@@ -21,7 +16,7 @@ public static class FFmpegEncoder
         ).Replace("\\", "/");
 
         string args =
-            $"-y -framerate 60 -i \"{framePattern}\" " +
+            $"-y -framerate \"{fps}\" -i \"{framePattern}\" " +
             "-c:v libx264 -pix_fmt yuv420p " +
             $"\"{outputVideo}\"";
 
@@ -37,7 +32,7 @@ public static class FFmpegEncoder
             "final.mp4"
         ).Replace("\\", "/");
 
-        audioPath = PathUtil.AudioPath.Replace("\\", "/");
+        var audioPath = PathUtil.AudioPath.Replace("\\", "/");
 
         string mergeArgs =
             $"-y -i \"{outputVideo}\" -i \"{audioPath}\" " +
@@ -60,28 +55,9 @@ public static class FFmpegEncoder
             WorkingDirectory = workingDir,
             UseShellExecute = false,
             CreateNoWindow = true,
-            RedirectStandardError = true,
-            RedirectStandardOutput = true
         };
 
         var process = Process.Start(psi);
-
-        process.OutputDataReceived += (s, e) =>
-        {
-            if (!string.IsNullOrEmpty(e.Data))
-                UnityEngine.Debug.Log(e.Data);
-        };
-
-        process.ErrorDataReceived += (s, e) =>
-        {
-            if (!string.IsNullOrEmpty(e.Data))
-                UnityEngine.Debug.LogError(e.Data);
-        };
-
-        process.BeginOutputReadLine();
-        process.BeginErrorReadLine();
-
         return process;
     }
-
 }

@@ -6,34 +6,48 @@ public class FrameCapture : MonoBehaviour
 {
     public RenderTexture rt;
     public string outputDir;
-    public int fps = 60;
+    public int CapturedFrameCount => _frameIndex;
 
-    void OnValidate()
+    bool _recording;
+    int _frameIndex;
+
+    public void StartCapture()
     {
-        outputDir = string.IsNullOrEmpty(outputDir) ? Path.Combine(Application.dataPath, "Exports") : outputDir;
+        _frameIndex = 0;
+        _recording = true;
+        StartCoroutine(CaptureLoop());
     }
 
-    public IEnumerator Capture(float duration)
+    public void StopCapture()
     {
-        int total = Mathf.CeilToInt(duration * fps);
+        _recording = false;
+    }
 
-        for (int i = 0; i < total; i++)
+    IEnumerator CaptureLoop()
+    {
+        Texture2D tex = new Texture2D(1920, 1080, TextureFormat.RGB24, false);
+        while (_recording)
         {
-            yield return new WaitForEndOfFrame();
-
             RenderTexture.active = rt;
-            Texture2D tex = new Texture2D(1920, 1080, TextureFormat.RGB24, false);
             tex.ReadPixels(new Rect(0, 0, 1920, 1080), 0, 0);
             tex.Apply();
 
             File.WriteAllBytes(
-                $"{outputDir}/frame_{i:D05}.png",
+                $"{outputDir}/frame_{_frameIndex:D05}.png",
                 tex.EncodeToPNG()
             );
 
-            Object.Destroy(tex);
+            _frameIndex++;
+            yield return new WaitForEndOfFrame();
         }
 
         RenderTexture.active = null;
+        Destroy(tex);
+    }
+
+    public void Cleanup()
+    {
+
     }
 }
+
