@@ -31,6 +31,7 @@ public class DialoguePlayer : MonoBehaviour
 
     void Awake()
     {
+        Application.runInBackground = true;
         _frameCapture = GetComponent<FrameCapture>();
     }
 
