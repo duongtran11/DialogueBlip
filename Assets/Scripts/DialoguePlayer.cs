@@ -22,6 +22,9 @@ public class DialoguePlayer : MonoBehaviour
     [SerializeField] private TMP_InputField DialogueSpeedInput;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text dialogueText;
+    private string _name;
+    private string _dialogueText;
+    private float _dialogueSpeed;
     private FrameCapture _frameCapture;
     private float _generateTimeInSeconds;
 
@@ -33,6 +36,24 @@ public class DialoguePlayer : MonoBehaviour
     {
         Application.runInBackground = true;
         _frameCapture = GetComponent<FrameCapture>();
+        _name = PlayerPrefs.GetString("name", "Default Name");
+        _dialogueText = PlayerPrefs.GetString("dialogueText", "");
+        _dialogueSpeed = PlayerPrefs.GetFloat("dialogueSpeed", 1f);
+        NameInput.onEndEdit.AddListener(_ =>
+        {
+            _name = NameInput.text;
+            PlayerPrefs.SetString("name", _name);
+        });
+        NameInput.onEndEdit.AddListener(_ =>
+        {
+            _dialogueText = DialogueInput.text;
+            PlayerPrefs.SetString("dialogueText", _dialogueText);
+        });
+        NameInput.onEndEdit.AddListener(_ =>
+        {
+            _dialogueSpeed = float.Parse(DialogueSpeedInput.text);
+            PlayerPrefs.SetFloat("dialogueSpeed", _dialogueSpeed);
+        });
     }
 
     public void StartPlayback()
