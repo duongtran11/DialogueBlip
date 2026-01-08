@@ -26,7 +26,7 @@ public class FrameCapture : MonoBehaviour
 
     IEnumerator CaptureLoop()
     {
-        Texture2D tex = new Texture2D(1920, 1080, TextureFormat.RGB24, false);
+        Texture2D tex = new Texture2D(1920, 1080, TextureFormat.ARGB32, false);
         while (_recording)
         {
             RenderTexture.active = rt;

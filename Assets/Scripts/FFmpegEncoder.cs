@@ -40,7 +40,7 @@ public static class FFmpegEncoder
             PathUtil.ExportDir
         );
         merge.WaitForExit();
-        Cleanup();
+        // Cleanup();
     }
 
     static Process RunFFmpeg(string exe, string args, string workingDir)

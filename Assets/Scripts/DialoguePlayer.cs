@@ -93,7 +93,7 @@ public class DialoguePlayer : MonoBehaviour
                     break;
 
                 case DialogueFormat.Pause:
-                    yield return new WaitForSeconds(_speed);
+                    yield return new WaitForSecondsRealtime(_speed);
                     break;
 
                 case DialogueFormat.Slow:
@@ -107,7 +107,7 @@ public class DialoguePlayer : MonoBehaviour
                 default:
                     dialogueText.text += c;
                     Blip.TryPlay(c);
-                    yield return new WaitForSeconds(_speed);
+                    yield return new WaitForSecondsRealtime(_speed);
                     break;
             }
         }
@@ -134,7 +134,7 @@ public class DialoguePlayer : MonoBehaviour
                     break;
 
                 case DialogueFormat.Pause:
-                    yield return new WaitForSeconds(_speed);
+                    yield return new WaitForSecondsRealtime(_speed);
                     break;
 
                 case DialogueFormat.Slow:
@@ -148,7 +148,7 @@ public class DialoguePlayer : MonoBehaviour
                 default:
                     dialogueText.text += c;
                     Blip.TryPlay(c);
-                    yield return new WaitForSeconds(_speed);
+                    yield return new WaitForSecondsRealtime(_speed);
                     break;
             }
         }
