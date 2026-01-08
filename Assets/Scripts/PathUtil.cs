@@ -49,20 +49,29 @@ public static class PathUtil
     }
 
     /// Path file audio wav
+    public static string OutputVideoPath
+    {
+        get
+        {
+            return Path.Combine(ExportDir, "video.mp4").Replace("\\", "/");
+        }
+    }
+
+    /// Path file audio wav
     public static string AudioPath
     {
         get
         {
-            return Path.Combine(ExportDir, "dialogue.wav");
+            return Path.Combine(ExportDir, "dialogue.wav").Replace("\\", "/");
         }
     }
 
     /// Path video output
-    public static string VideoPath
+    public static string FinalVideoPath
     {
         get
         {
-            return Path.Combine(ExportDir, "final.mp4");
+            return Path.Combine(ExportDir, "final.mp4").Replace("\\", "/");
         }
     }
 }

@@ -12,10 +12,14 @@ public class DialoguePlayer : MonoBehaviour
     [SerializeField] private AudioRecorder _audioRecorder;
 
     [Space]
+    [Header("Setting")]
+    [SerializeField] private float _baseSpeed = 0.05f;
+
+    [Space]
     [Header("UI")]
     [SerializeField] private TMP_InputField NameInput;
     [SerializeField] private TMP_InputField DialogueInput;
-    [SerializeField] private TMP_InputField IntervalInput;
+    [SerializeField] private TMP_InputField DialogueSpeedInput;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text dialogueText;
     private FrameCapture _frameCapture;
@@ -42,13 +46,13 @@ public class DialoguePlayer : MonoBehaviour
             Debug.LogWarning("<b>Dialogue</b> is empty. Playback canceled.");
             return;
         }
-        if (string.IsNullOrEmpty(IntervalInput.text))
+        if (string.IsNullOrEmpty(DialogueSpeedInput.text))
         {
-            Debug.LogWarning("<b>Interval</b> is empty. Playback canceled.");
+            Debug.LogWarning("<b>Dialogue Speed</b> is empty. Playback canceled.");
             return;
         }
 
-        StartCoroutine(Play(NameInput.text, DialogueInput.text, float.Parse(IntervalInput.text), true));
+        StartCoroutine(Play(NameInput.text, DialogueInput.text, float.Parse(DialogueSpeedInput.text), true));
     }
 
     public void StartGenerate()
@@ -63,13 +67,13 @@ public class DialoguePlayer : MonoBehaviour
             Debug.LogWarning("<b>Dialogue</b> is empty. Playback canceled.");
             return;
         }
-        if (string.IsNullOrEmpty(IntervalInput.text))
+        if (string.IsNullOrEmpty(DialogueSpeedInput.text))
         {
             Debug.LogWarning("<b>Interval</b> is empty. Playback canceled.");
             return;
         }
 
-        StartCoroutine(Generate(NameInput.text, DialogueInput.text, float.Parse(IntervalInput.text), true));
+        StartCoroutine(Generate(NameInput.text, DialogueInput.text, float.Parse(DialogueSpeedInput.text), true));
     }
 
     public IEnumerator Play(string speaker, string text, float dialogueSpeed, bool isMale)
@@ -77,8 +81,7 @@ public class DialoguePlayer : MonoBehaviour
         nameText.text = speaker;
         dialogueText.text = "";
 
-        float baseSpeed = dialogueSpeed;
-        _speed = baseSpeed;
+        _speed = _baseSpeed / dialogueSpeed;
         Blip.Init(isMale);
 
         foreach (char c in text)
@@ -94,11 +97,11 @@ public class DialoguePlayer : MonoBehaviour
                     break;
 
                 case DialogueFormat.Slow:
-                    _speed = baseSpeed * _slow;
+                    _speed = _baseSpeed * _slow;
                     break;
 
                 case DialogueFormat.Fast:
-                    _speed = baseSpeed * _fast;
+                    _speed = _baseSpeed * _fast;
                     break;
 
                 default:
@@ -119,8 +122,7 @@ public class DialoguePlayer : MonoBehaviour
         nameText.text = name;
         dialogueText.text = "";
 
-        float baseSpeed = dialogueSpeed;
-        _speed = baseSpeed;
+        _speed = _baseSpeed / dialogueSpeed;
         Blip.Init(male);
 
         foreach (char c in text)
@@ -136,11 +138,11 @@ public class DialoguePlayer : MonoBehaviour
                     break;
 
                 case DialogueFormat.Slow:
-                    _speed = baseSpeed * _slow;
+                    _speed = _baseSpeed * _slow;
                     break;
 
                 case DialogueFormat.Fast:
-                    _speed = baseSpeed * _fast;
+                    _speed = _baseSpeed * _fast;
                     break;
 
                 default:
@@ -158,6 +160,5 @@ public class DialoguePlayer : MonoBehaviour
         var calculatedFPS = _frameCapture.CapturedFrameCount / _generateTimeInSeconds;
 
         FFmpegEncoder.EncodeVideo(calculatedFPS);
-        _frameCapture.Cleanup();
     }
 }

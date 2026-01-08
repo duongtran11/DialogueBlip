@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
@@ -43,11 +44,6 @@ public class FrameCapture : MonoBehaviour
 
         RenderTexture.active = null;
         Destroy(tex);
-    }
-
-    public void Cleanup()
-    {
-
     }
 }
 

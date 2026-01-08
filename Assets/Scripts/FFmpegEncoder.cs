@@ -1,5 +1,8 @@
+using System;
 using System.Diagnostics;
 using System.IO;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public static class FFmpegEncoder
 {
@@ -10,11 +13,7 @@ public static class FFmpegEncoder
             "frame_%05d.png"
         ).Replace("\\", "/");
 
-        string outputVideo = Path.Combine(
-            PathUtil.ExportDir,
-            "video.mp4"
-        ).Replace("\\", "/");
-
+        string outputVideo = PathUtil.OutputVideoPath;
         string args =
             $"-y -framerate \"{fps}\" -i \"{framePattern}\" " +
             "-c:v libx264 -pix_fmt yuv420p " +
@@ -27,23 +26,21 @@ public static class FFmpegEncoder
         );
         encode.WaitForExit();
 
-        string finalVideo = Path.Combine(
-            PathUtil.ExportDir,
-            "final.mp4"
-        ).Replace("\\", "/");
-
-        var audioPath = PathUtil.AudioPath.Replace("\\", "/");
+        string finalVideo = PathUtil.FinalVideoPath;
+        var audioPath = PathUtil.AudioPath;
 
         string mergeArgs =
             $"-y -i \"{outputVideo}\" -i \"{audioPath}\" " +
             "-c:v copy -c:a aac " +
             $"\"{finalVideo}\"";
 
-        RunFFmpeg(
+        var merge = RunFFmpeg(
             PathUtil.FFmpegPath,
             mergeArgs,
             PathUtil.ExportDir
         );
+        merge.WaitForExit();
+        Cleanup();
     }
 
     static Process RunFFmpeg(string exe, string args, string workingDir)
@@ -59,5 +56,34 @@ public static class FFmpegEncoder
 
         var process = Process.Start(psi);
         return process;
+    }
+
+    static void Cleanup()
+    {
+        TryDeleteFile(PathUtil.AudioPath);
+        TryDeleteFile(PathUtil.OutputVideoPath);
+        string[] frames = Directory.GetFiles(PathUtil.ExportDir, "frame_*.png");
+        foreach (string frame in frames)
+        {
+            TryDeleteFile(frame);
+        }
+        Debug.Log("Cleanup finished");
+    }
+
+    static void TryDeleteFile(string path)
+    {
+        if (string.IsNullOrEmpty(path)) return;
+        if (!File.Exists(path))
+        {
+            Debug.LogWarning($"Failed trying to delete file at {path}. File does not exist.");
+        }
+        try
+        {
+            File.Delete(path);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex);
+        }
     }
 }
