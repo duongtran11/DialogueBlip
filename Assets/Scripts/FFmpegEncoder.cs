@@ -16,7 +16,7 @@ public static class FFmpegEncoder
         string outputVideo = PathUtil.OutputVideoPath;
         string args =
             $"-y -framerate \"{fps}\" -i \"{framePattern}\" " +
-            "-c:v libx264 -pix_fmt yuv420p " +
+            "-c:v prores_ks -pix_fmt yuva444p10le -b:v 0 -crf 30 -auto-alt-ref 0 " +
             $"\"{outputVideo}\"";
 
         Process encode = RunFFmpeg(
@@ -40,7 +40,7 @@ public static class FFmpegEncoder
             PathUtil.ExportDir
         );
         merge.WaitForExit();
-        // Cleanup();
+        Cleanup();
     }
 
     static Process RunFFmpeg(string exe, string args, string workingDir)

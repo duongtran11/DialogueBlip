@@ -53,7 +53,7 @@ public static class PathUtil
     {
         get
         {
-            return Path.Combine(ExportDir, "video.mp4").Replace("\\", "/");
+            return Path.Combine(ExportDir, "video.mov").Replace("\\", "/");
         }
     }
 
@@ -71,7 +71,7 @@ public static class PathUtil
     {
         get
         {
-            return Path.Combine(ExportDir, "final.mp4").Replace("\\", "/");
+            return Path.Combine(ExportDir, "final.mov").Replace("\\", "/");
         }
     }
 }
