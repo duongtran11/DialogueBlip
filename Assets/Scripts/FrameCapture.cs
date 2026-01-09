@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
@@ -6,7 +5,6 @@ using UnityEngine;
 public class FrameCapture : MonoBehaviour
 {
     public RenderTexture rt;
-    public string outputDir;
     public int CapturedFrameCount => _frameIndex;
 
     bool _recording;
@@ -34,7 +32,7 @@ public class FrameCapture : MonoBehaviour
             tex.Apply();
 
             File.WriteAllBytes(
-                $"{outputDir}/frame_{_frameIndex:D05}.png",
+                $"{PathUtil.FrameDir}/frame_{_frameIndex:D05}.png",
                 tex.EncodeToPNG()
             );
 

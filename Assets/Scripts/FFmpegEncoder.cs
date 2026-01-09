@@ -1,7 +1,5 @@
-using System;
 using System.Diagnostics;
 using System.IO;
-using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 public static class FFmpegEncoder
@@ -9,7 +7,7 @@ public static class FFmpegEncoder
     public static void EncodeVideo(float fps)
     {
         string framePattern = Path.Combine(
-            PathUtil.ExportDir,
+            PathUtil.FrameDir,
             "frame_%05d.png"
         ).Replace("\\", "/");
 
@@ -60,30 +58,9 @@ public static class FFmpegEncoder
 
     static void Cleanup()
     {
-        TryDeleteFile(PathUtil.AudioPath);
-        TryDeleteFile(PathUtil.OutputVideoPath);
-        string[] frames = Directory.GetFiles(PathUtil.ExportDir, "frame_*.png");
-        foreach (string frame in frames)
-        {
-            TryDeleteFile(frame);
-        }
+        Utilities.TryDeleteFile(PathUtil.AudioPath);
+        Utilities.TryDeleteFile(PathUtil.OutputVideoPath);
+        Utilities.TryDeleteDirectory(PathUtil.FrameDir);
         Debug.Log("Cleanup finished");
-    }
-
-    static void TryDeleteFile(string path)
-    {
-        if (string.IsNullOrEmpty(path)) return;
-        if (!File.Exists(path))
-        {
-            Debug.LogWarning($"Failed trying to delete file at {path}. File does not exist.");
-        }
-        try
-        {
-            File.Delete(path);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError(ex);
-        }
     }
 }
